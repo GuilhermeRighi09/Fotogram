@@ -1,9 +1,9 @@
 const video = document.getElementById('camera');
 const fotos = document.getElementById('photos');
 
-// =========================
+// ===============================
 // CARREGAR IA
-// =========================
+// ===============================
 
 async function carregarIA() {
 
@@ -16,8 +16,6 @@ async function carregarIA() {
         await faceapi.nets.tinyFaceDetector.loadFromUri(modelPath);
 
         await faceapi.nets.faceLandmark68TinyNet.loadFromUri(modelPath);
-
-        await faceapi.nets.faceExpressionNet.loadFromUri(modelPath);
 
         console.log("IA pronta!");
 
@@ -33,9 +31,9 @@ async function carregarIA() {
 
 }
 
-// =========================
+// ===============================
 // CAMERA
-// =========================
+// ===============================
 
 async function startCamera() {
 
@@ -44,8 +42,8 @@ async function startCamera() {
         const stream =
             await navigator.mediaDevices.getUserMedia({
                 video: {
-                    width: { ideal: 640 },
-                    height: { ideal: 480 }
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 }
                 }
             });
 
@@ -61,9 +59,9 @@ async function startCamera() {
 
 }
 
-// =========================
+// ===============================
 // DETECÇÃO FACIAL
-// =========================
+// ===============================
 
 video.addEventListener('loadedmetadata', () => {
 
@@ -79,22 +77,23 @@ video.addEventListener('loadedmetadata', () => {
             await faceapi
             .detectAllFaces(
                 video,
-                new faceapi.TinyFaceDetectorOptions()
+                new faceapi.TinyFaceDetectorOptions({
+                    inputSize: 320,
+                    scoreThreshold: 0.5
+                })
             )
-            .withFaceLandmarks(true)
-            .withFaceExpressions();
+            .withFaceLandmarks(true);
 
-        // salva detecções
         window.faceDetections =
             deteccoes;
 
-    }, 100);
+    }, 60);
 
 });
 
-// =========================
-// CARREGAR IMAGEM
-// =========================
+// ===============================
+// CARREGAR PNG
+// ===============================
 
 async function carregarImagem(src) {
 
@@ -110,15 +109,15 @@ async function carregarImagem(src) {
 
 }
 
-// =========================
+// ===============================
 // FOTO
-// =========================
+// ===============================
 
 async function capturarPhoto(efeito) {
 
     if (!video.videoWidth) {
 
-        alert("Aguarde câmera carregar!");
+        alert("Aguarde a câmera!");
 
         return;
 
@@ -134,109 +133,115 @@ async function capturarPhoto(efeito) {
     const context =
         photo.getContext('2d');
 
-    // espelho
+    // espelho selfie
     context.translate(photo.width, 0);
 
     context.scale(-1, 1);
 
-    // =========================
+    // ===============================
     // FILTROS
-    // =========================
+    // ===============================
 
     switch (efeito) {
 
+        case 'cinza':
+
+            context.filter =
+                'grayscale(100%)';
+
+            break;
+
         case 'inverter':
 
-    context.scale(1, -1);
+            context.scale(1, -1);
 
-    context.translate(0, -photo.height);
+            context.translate(
+                0,
+                -photo.height
+            );
 
-    break;
+            break;
 
-    case 'cinza':
+        case 'antiga':
 
-        context.filter =
-            'grayscale(100%)';
+            context.filter =
+                'sepia(100%)';
 
-        break;
+            break;
 
-    case 'antiga':
+        case 'vintage':
 
-        context.filter =
-            'sepia(100%)';
+            context.filter =
+                'sepia(60%) contrast(110%) brightness(95%) hue-rotate(-15deg)';
 
-        break;
+            break;
 
-    case 'vintage':
+        case 'cyberpunk':
 
-        context.filter =
-            'sepia(60%) contrast(110%) brightness(95%) hue-rotate(-15deg)';
+            context.filter =
+                'contrast(140%) hue-rotate(130deg) saturate(250%)';
 
-        break;
+            break;
 
-    case 'cyberpunk':
+        case 'brilho':
 
-        context.filter =
-            'contrast(140%) hue-rotate(130deg) saturate(250%)';
+            context.filter =
+                'brightness(220%) contrast(90%)';
 
-        break;
+            break;
 
-    case 'brilho':
+        case 'saturacao':
 
-        context.filter =
-            'brightness(220%) contrast(90%)';
+            context.filter =
+                'saturate(350%)';
 
-        break;
+            break;
 
-    case 'saturacao':
+        case 'opacity':
 
-        context.filter =
-            'saturate(350%)';
+            context.filter =
+                'opacity(30%)';
 
-        break;
+            break;
 
-    case 'opacity':
+        case 'sombra':
 
-        context.filter =
-            'opacity(30%)';
+            context.filter =
+                'brightness(45%) contrast(170%)';
 
-        break;
+            break;
 
-    case 'sombra':
+        case 'desfoque':
 
-        context.filter =
-            'brightness(45%) contrast(170%)';
+            context.filter =
+                'blur(8px)';
 
-        break;
+            break;
 
-    case 'desfoque':
+        case 'raio-x':
 
-        context.filter =
-            'blur(8px)';
+            context.filter =
+                'invert(100%) grayscale(100%) contrast(140%)';
 
-        break;
+            break;
 
-    case 'raio-x':
+        case 'noir':
 
-        context.filter =
-            'invert(100%) grayscale(100%) contrast(140%)';
+            context.filter =
+                'grayscale(100%) contrast(280%) brightness(75%)';
 
-        break;
+            break;
 
-    case 'noir':
+        default:
 
-        context.filter =
-            'grayscale(100%) contrast(280%) brightness(75%)';
+            context.filter = 'none';
 
-        break;
+    }
 
-    default:
+    // ===============================
+    // DESENHA VIDEO
+    // ===============================
 
-        context.filter = 'none';
-
-}
-
-    // desenha câmera
     context.drawImage(
         video,
         0,
@@ -245,9 +250,9 @@ async function capturarPhoto(efeito) {
         photo.height
     );
 
-    // =========================
-    // EFEITOS PNG
-    // =========================
+    // ===============================
+    // FILTROS PNG
+    // ===============================
 
     if (
         window.faceDetections &&
@@ -260,256 +265,283 @@ async function capturarPhoto(efeito) {
         const pontos =
             face.landmarks.positions;
 
-        // inverter X
-        const inverterX =
-            (x) => photo.width - x;
-
-        // pontos
+        // olhos
         const olhoEsq = pontos[36];
         const olhoDir = pontos[45];
 
+        // nariz
         const nariz = pontos[30];
 
+        // boca
         const boca = pontos[57];
 
+        // topo
         const testa = pontos[27];
 
+        // laterais
         const rostoEsq = pontos[0];
         const rostoDir = pontos[16];
 
-        // coordenadas invertidas
-        const olhoEsqX =
-            inverterX(olhoEsq.x);
+        // coordenadas normais
+        const olhoEsqX = olhoEsq.x;
+        const olhoDirX = olhoDir.x;
+        const narizX = nariz.x;
+        const bocaX = boca.x;
 
-        const olhoDirX =
-            inverterX(olhoDir.x);
-
-        const narizX =
-            inverterX(nariz.x);
-
-        const bocaX =
-            inverterX(boca.x);
-
-        // tamanhos
-        const larguraOlhos =
+        // medidas reais
+        const distanciaOlhos =
             Math.abs(
                 olhoDirX - olhoEsqX
             );
 
-        const larguraRosto =
+        const larguraMandibula =
             Math.abs(
-                inverterX(rostoDir.x) -
-                inverterX(rostoEsq.x)
+                pontos[14].x -
+                pontos[2].x
             );
+
+        const larguraTesta =
+            Math.abs(
+                pontos[24].x -
+                pontos[19].x
+            );
+
+        const larguraRosto =
+            (
+                larguraMandibula +
+                larguraTesta
+            ) / 2;
 
         const centroRosto =
             (
-                inverterX(rostoEsq.x) +
-                inverterX(rostoDir.x)
+                rostoEsq.x +
+                rostoDir.x
+            ) / 2;
+
+        const alturaOlhos =
+            (
+                olhoEsq.y +
+                olhoDir.y
             ) / 2;
 
         const topoCabeca =
             testa.y;
 
-        // =========================
-        // BIGODE
-        // =========================
+        // angulo cabeça
+        const angulo =
+            Math.atan2(
+                olhoDir.y - olhoEsq.y,
+                olhoDirX - olhoEsqX
+            );
 
-        if (efeito === 'bigode') {
+        // largura boca
+        const larguraBoca =
+            Math.abs(
+                pontos[54].x -
+                pontos[48].x
+            );
+
+        // ===============================
+        // FUNÇÃO DESENHAR
+        // ===============================
+
+        async function desenharFiltro(
+            caminho,
+            x,
+            y,
+            largura,
+            altura
+        ) {
 
             const img =
-                await carregarImagem(
-                    './assets/bigode.png'
-                );
+                await carregarImagem(caminho);
+
+            context.save();
+
+            context.translate(
+                centroRosto,
+                alturaOlhos
+            );
+
+            context.rotate(angulo);
 
             context.drawImage(
                 img,
-                bocaX - 130,
-                nariz.y + 20,
-                260,
+                x - centroRosto,
+                y - alturaOlhos,
+                largura,
+                altura
+            );
+
+            context.restore();
+
+        }
+
+        // ===============================
+        // BIGODE
+        // ===============================
+
+        if (efeito === 'bigode') {
+
+            await desenharFiltro(
+                './assets/bigode.png',
+                bocaX - larguraBoca,
+                nariz.y + 15,
+                larguraBoca * 2,
+                120
+            );
+
+        }
+
+        // ===============================
+        // ÓCULOS
+        // ===============================
+
+        if (efeito === 'oculos') {
+
+            await desenharFiltro(
+                './assets/oculos.png',
+                centroRosto - distanciaOlhos * 1.35,
+                alturaOlhos - 55,
+                distanciaOlhos * 2.7,
                 160
             );
 
         }
 
-        // =========================
-        // ÓCULOS
-        // =========================
-
-        if (efeito === 'oculos') {
-
-            const img =
-                await carregarImagem(
-                    './assets/oculos.png'
-                );
-
-            context.drawImage(
-                img,
-                centroRosto - larguraOlhos * 1.2,
-                olhoEsq.y - 40,
-                larguraOlhos * 2.4,
-                140
-            );
-
-        }
-
-        // =========================
+        // ===============================
         // CHAPÉU
-        // =========================
+        // ===============================
 
         if (efeito === 'chapeu') {
 
-            const img =
-                await carregarImagem(
-                    './assets/chapeu.png'
-                );
-
-            context.drawImage(
-                img,
-                centroRosto - larguraRosto,
-                topoCabeca - 260,
-                larguraRosto * 2,
-                320
+            await desenharFiltro(
+                './assets/chapeu.png',
+                centroRosto - larguraRosto * 1.1,
+                topoCabeca - 280,
+                larguraRosto * 2.2,
+                340
             );
 
         }
 
-        // =========================
+        // ===============================
         // COROA
-        // =========================
+        // ===============================
 
         if (efeito === 'coroa') {
 
-            const img =
-                await carregarImagem(
-                    './assets/coroa.png'
-                );
-
-            context.drawImage(
-                img,
-                centroRosto - larguraRosto * 0.7,
-                topoCabeca - 210,
-                larguraRosto * 1.4,
-                200
+            await desenharFiltro(
+                './assets/coroa.png',
+                centroRosto - larguraTesta * 0.9,
+                topoCabeca - 220,
+                larguraTesta * 1.8,
+                190
             );
 
         }
 
-        // =========================
+        // ===============================
         // FONE
-        // =========================
+        // ===============================
 
         if (efeito === 'fone') {
 
-            const img =
-                await carregarImagem(
-                    './assets/fone.png'
-                );
-
-            context.drawImage(
-                img,
-                centroRosto - larguraRosto,
-                topoCabeca - 80,
-                larguraRosto * 2,
-                320
+            await desenharFiltro(
+                './assets/fone.png',
+                centroRosto - larguraRosto * 1.1,
+                topoCabeca - 120,
+                larguraRosto * 2.2,
+                340
             );
 
         }
 
-        // =========================
+        // ===============================
         // MÁSCARA
-        // =========================
+        // ===============================
 
         if (efeito === 'mascara') {
 
-            const img =
-                await carregarImagem(
-                    './assets/mascara.png'
-                );
-
-            context.drawImage(
-                img,
-                centroRosto - larguraRosto * 0.75,
-                olhoEsq.y - 70,
-                larguraRosto * 1.5,
-                320
+            await desenharFiltro(
+                './assets/mascara.png',
+                centroRosto - larguraRosto * 0.85,
+                alturaOlhos - 80,
+                larguraRosto * 1.7,
+                340
             );
 
         }
 
-        // =========================
+        // ===============================
         // BATMAN
-        // =========================
+        // ===============================
 
         if (efeito === 'batman') {
 
-            const img =
-                await carregarImagem(
-                    './assets/batman.png'
-                );
+            await desenharFiltro(
+                './assets/batman.png',
+                centroRosto - larguraRosto * 1.1,
+                topoCabeca - 200,
+                larguraRosto * 2.2,
+                430
+            );
 
-            context.drawImage(
-                img,
-                centroRosto - larguraRosto,
-                topoCabeca - 180,
-                larguraRosto * 2,
+        }
+
+        // ===============================
+        // CACHORRO
+        // ===============================
+
+        if (efeito === 'cachorro') {
+
+            await desenharFiltro(
+                './assets/cachorro.png',
+                centroRosto - larguraRosto * 1.1,
+                topoCabeca - 140,
+                larguraRosto * 2.2,
+                390
+            );
+
+        }
+
+        // ===============================
+        // PALHAÇO
+        // ===============================
+
+        if (efeito === 'palhaco') {
+
+            await desenharFiltro(
+                './assets/palhaco.png',
+                centroRosto - larguraRosto * 1.1,
+                topoCabeca - 150,
+                larguraRosto * 2.2,
                 420
             );
 
         }
 
+        // ===============================
+        // GATO
+        // ===============================
 
-        if (efeito === 'cachorro') {
+        if (efeito === 'gato') {
 
-            const img =
-                await carregarImagem(
-                    './assets/cachorro.png'
-                );
-
-            context.drawImage(
-                img,
-                centroRosto - larguraRosto,
-                topoCabeca - 120,
-                larguraRosto * 2,
+            await desenharFiltro(
+                './assets/gato.png',
+                centroRosto - larguraRosto * 1.1,
+                topoCabeca - 150,
+                larguraRosto * 2.2,
                 360
             );
 
         }
 
-        if (efeito === 'palhaco') {
-
-    const img =
-        await carregarImagem(
-            './assets/palhaco.png'
-        );
-
-    context.drawImage(
-        img,
-        centroRosto - larguraRosto,
-        topoCabeca - 120,
-        larguraRosto * 2,
-        380
-    );
-
-}
-    if (efeito === 'gato') {
-
-    const img =
-        await carregarImagem(
-            './assets/gato.png'
-        );
-
-    context.drawImage(
-        img,
-        centroRosto - larguraRosto,
-        topoCabeca - 140,
-        larguraRosto * 2,
-        340
-    );
-
-}
-
     }
+
+    // ===============================
+    // GALERIA
+    // ===============================
 
     const galeriaTitulo =
         fotos.querySelector('h1');
@@ -520,6 +552,10 @@ async function capturarPhoto(efeito) {
     );
 
 }
+
+// ===============================
+// INICIAR
+// ===============================
 
 window.addEventListener(
     'DOMContentLoaded',
