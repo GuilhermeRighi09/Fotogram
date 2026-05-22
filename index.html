@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fotogram - Câmera IA</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Exo+2:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>Tire sua selfie 📸</h1>
+        <div class="video-wrapper">
+            <video id="camera" autoplay muted playsinline></video>
+        </div>
+    </div>
+
+    <div class="botoes">
+        <button class="btn-principal" onclick="capturarPhoto('normal')">📸 Tirar Foto Normal</button>
+        <button onclick="capturarPhoto('inverter')">🔄 Inverter Vertical</button>
+        
+        <hr style="border: 0; height: 1px; background: #222; margin: 15px 0; width: 100%;">
+        
+        <button onclick="capturarPhoto('cinza')">🎬 Cinza Clássico</button>
+        <button onclick="capturarPhoto('antiga')">📜 Sepia Retrô</button>
+        <button onclick="capturarPhoto('vintage')">🎞️ Vintage Quente</button>
+        <button onclick="capturarPhoto('cyberpunk')">🔮 Neon Cyberpunk</button>
+        
+        <button onclick="capturarPhoto('brilho')">☀️ Super Brilho</button>
+        <button onclick="capturarPhoto('saturacao')">🎨 Super Saturação</button>
+        <button onclick="capturarPhoto('opacity')">👻 Fantasma</button>
+        <button onclick="capturarPhoto('sombra')">🌑 Dark / Sombras</button>
+
+        <button onclick="capturarPhoto('desfoque')">🌫️ Desfoque Soft</button>
+        <button onclick="capturarPhoto('raio-x')">⚡ Efeito Raio-X</button>
+        <button onclick="capturarPhoto('psicodélico')">🌈 Psicodélico</button>
+        <button onclick="capturarPhoto('noir')">🕶️ Alto Contraste Noir</button>
+    <hr>
+
+    <button onclick="capturarPhoto('bigode')">
+        🧔 Bigode
+    </button>
+
+    <button onclick="capturarPhoto('oculos')">
+        🤓 Óculos
+    </button>
+
+    <button onclick="capturarPhoto('chapeu')">
+        🎩 Chapéu
+    </button>
+
+    <button onclick="capturarPhoto('coroa')">
+        👑 Coroa
+    </button>
+
+    <button onclick="capturarPhoto('fone')">
+        🎧 Fone
+    </button>
+
+    <button onclick="capturarPhoto('mascara')">
+        🎭 Máscara
+    </button>
+
+    <button onclick="capturarPhoto('batman')">
+        🦇 Batman
+    </button>
+
+    <button onclick="capturarPhoto('cachorro')">
+        🐶 Cachorro
+    </button>
+
+    <button onclick="capturarPhoto('palhaco')">
+    🤡 Palhaço
+    </button>
+
+    <button onclick="capturarPhoto('gato')">
+    🐱 Gato
+    </button>
+    </div>
+
+    <br><br>
+
+    <div id="photos" class="photos">
+        <h1>Galeria de Fotos</h1>
+    </div>
+   <script defer src="https://unpkg.com/face-api.js@0.22.2/dist/face-api.min.js"></script>
+<script defer src="index.js"></script>
+</body>
+</html>
